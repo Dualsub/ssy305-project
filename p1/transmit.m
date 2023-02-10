@@ -17,14 +17,25 @@ function s = transmit(b,plot_flag)
 % Complete the code below to create samples of the transmitted signal.
 
 %1. Convert bits to symbols
-constellation = [];         % Specify constellation here (vector)
-a = [];                     % Convert the bits in vector b to symbols in vector a
+M = 4;
+k = uint8(log2(M));
+A = (1-M:2:M-1);         % Specify constellation here (vector)
+% Translate k bits into a index into the A vector.
+idx = bit2int(b', k) + 1; % Add one because of one-based indexing.
+a = A(idx);           % Convert the bits in vector b to symbols in vector a
+display(A)
+save parameters.mat M A
 
-%2. Pulse Amplitude Modulation
-Ns = [];                    % Specify the length of the transmit pulse here (scalar)
-pulse = [];                 % Specify the transmit pulse here (vector)
-s = [];                     % Perform PAM. The resulting transmit signal is the vector s.
+% 2. Pulse Amplitude Modulation
+alpha = 0.8;
+Ns = 100; % Specify the length of the transmit pulse here (scalar)
+pulse = rcosdesign(alpha, length(a), Ns); % Specify the transmit pulse here (vector)
+plot(pulse);
 
+P = (pulse' * a);
+s = P(:)'; % Perform PAM. The resulting transmit signal is the vector s.
+
+save filter.mat pulse Ns
 %********** DON'T EDIT FROM HERE ON
 % plot Tx signals
 PlotSignals(plot_flag, 'Tx', a, s)
