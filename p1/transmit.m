@@ -23,15 +23,12 @@ A = (1-M:2:M-1);         % Specify constellation here (vector)
 % Translate k bits into a index into the A vector.
 idx = bit2int(b', k) + 1; % Add one because of one-based indexing.
 a = A(idx);           % Convert the bits in vector b to symbols in vector a
-display(A)
 save parameters.mat M A
 
 % 2. Pulse Amplitude Modulation
 alpha = 0.8;
-Ns = 100; % Specify the length of the transmit pulse here (scalar)
-pulse = rcosdesign(alpha, length(a), Ns); % Specify the transmit pulse here (vector)
-plot(pulse);
-
+Ns = 8; % Specify the length of the transmit pulse here (scalar)
+pulse = rcosdesign(alpha, M, Ns / M); % Specify the transmit pulse here (vector)
 P = (pulse' * a);
 s = P(:)'; % Perform PAM. The resulting transmit signal is the vector s.
 
