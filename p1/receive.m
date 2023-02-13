@@ -29,7 +29,7 @@ y = filter(MF,1,r);       % Here the received signal r is passed through the mat
 % stem(r)
 % stem(y)
 %2. Sample filter output
-y_sampled = y(1:Ns+1:length(y)); % Compute the sampled signal y_sampled
+y_sampled = y(Ns:Ns:length(y)); % Compute the sampled signal y_sampled
 %3. Make decision on which symbol was transmitted
 % Split into rows of Ns-elements
 
@@ -48,6 +48,7 @@ for i=1:num_sym
     b_hat(i,:) = bits;
 end
 
+b_hat = b_hat';
 b_hat = b_hat(:)';
 display(b_hat);
 

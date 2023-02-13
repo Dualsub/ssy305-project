@@ -18,17 +18,28 @@ function s = transmit(b,plot_flag)
 
 %1. Convert bits to symbols
 M = 4;
+C = 1;
+if C==1
+    X=5;
+elseif C==2
+    X=15;
+end
+
 k = uint8(log2(M));
-A = (1-M:2:M-1);         % Specify constellation here (vector)
+if M ==2    % Specify constellation here (vector)
+    A = (-X/2:X:X/2); 
+elseif M==4
+    A = (-3.*X./2:X:3.*X./2);
+end
 % Translate k bits into a index into the A vector.
 idx = bit2int(b', k) + 1; % Add one because of one-based indexing.
 a = A(idx);           % Convert the bits in vector b to symbols in vector a
 save parameters.mat M A
 
 % 2. Pulse Amplitude Modulation
-alpha = 0.8;
-Ns = 8; % Specify the length of the transmit pulse here (scalar)
-pulse = rcosdesign(alpha, M, Ns / M); % Specify the transmit pulse here (vector)
+alpha = 1;
+Ns = 9; % Specify the length of the transmit pulse here (scalar)
+pulse = rcosdesign(alpha, 1, Ns-1); % Specify the transmit pulse here (vector)
 P = (pulse' * a);
 s = P(:)'; % Perform PAM. The resulting transmit signal is the vector s.
 
