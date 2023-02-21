@@ -23,7 +23,8 @@ function [bError] = ErrorCheck(data,TypeOfErrorCheck)
 
 switch TypeOfErrorCheck
     case 'parity'
-        bError = mod(sum(data), 2); %Implement error check here   
+        expectedparity = mod(sum(data(2:end-1)), 2);
+        bError = expectedparity ~= data(end);%Implement error check here   
     case 'checksum'
         
     otherwise

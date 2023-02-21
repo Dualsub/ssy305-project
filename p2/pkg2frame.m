@@ -23,9 +23,12 @@ function frame = pkg2frame(packet, header, TypeOfErrorCheck)
 switch TypeOfErrorCheck
     case 'parity'
         %1 calculate parity bit
-        
+        header = mod(header, 2);
+        paritybit = mod(sum(packet) + sum(header), 2);
         %2 assemble the frame
-        frame = [];
+        frame = [header packet paritybit];
+    case 'checksum'
+
     otherwise
           error('Invalid error check!')        
 end

@@ -52,14 +52,14 @@ ipacket = 1;                              %initialize packet counter
 R_next = 0;                               %initialize next frame expected (sequence number)
 
 %------------- START EDITING HERE --------------
-error('You must complete the Receiver function!!!!!') % comment this line to implement the receiver
+% error('You must complete the Receiver function!!!!!') % comment this line to implement the receiver
 
 TypeOfErrorCheck = 'parity'; % select error detection method
 
 while ipacket<=nPackets 
     
     %1 check for data
-    nBitsOverhead = []; %define the number of overhead bits here (scalar)
+    nBitsOverhead = 2; %define the number of overhead bits here (scalar)
     ExpectedLengtOfFrame = nBitsPacket+nBitsOverhead; %this is the length of the frame we should receive
     Y = ReadFromChannel(Channel, ExpectedLengtOfFrame);
     
@@ -69,7 +69,14 @@ while ipacket<=nPackets
         %implement rest of receiver side of stop-and-wait ARQ protocol below (incl. error check etc.)
         %send ack by using: WriteToChannel(Channel,ackframe) where ackframe is your ackknowledgement frame
         %Complete the function [bError] = ErrorCheck(data,TypeOfErrorCheck) for error check of received data  
+        
+        if ~ErrorCheck(Y, TypeOfErrorCheck) && Y(1) == R_next
+            R_next = mod(R_next + 1, 2);
+            ipacket = ipacket + 1;
+        end
 
+        ackFrame = [R_next R_next];
+        WriteToChannel(Channel, ackFrame);
     end   
 end
 

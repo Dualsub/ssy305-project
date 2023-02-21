@@ -76,7 +76,7 @@ while ipacket<=size(packages,1)
     %2 embedd packet in frame: implement the code to create frames (add
     %  header and trailer, ...): you have to complete the function pkg2frame!
     frame = pkg2frame(packet, S_last, TypeOfErrorCheck);
-    nBitsOverhead = 2; %specify the number of overhead bits here (scalar)
+    nBitsOverhead = []; %specify the number of overhead bits here (scalar)
     
     %3 Send current frame
     WriteToChannel(Channel, frame)
@@ -88,19 +88,16 @@ while ipacket<=size(packages,1)
     % get the time that has passed since timer was started 
     % you can also use that to record the RTT 
     timer = tic;
-    time = 0;
-    while time < timeout
+    while toc(timer) < timeout
         ackData = ReadFromChannel(Channel, FrameLength);
         S_expected = mod(S_last + 1, 2);
-        if ~isNaN(ackData) && ~ErrorCheck(ackData, TypeOfErrorCheck) && ackData(1) == S_expected
+        if ~isNaN(ackData) && ~ErrorCheck(ackData, ) && ackData(1) == S_expected
             ipacket = ipacket + 1;
             S_last = mod(S_last + 1, 2);
-            RTT(ipacket) = time;
             break
         end
-
-        time = toc(timer);
     end
+         
 end
 
 
