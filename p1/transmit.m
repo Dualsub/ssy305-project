@@ -21,7 +21,8 @@ Ns = 5;
 alpha = 0.05;
 M = 4;
 C = 2;
-[s, a, A, pulse] = transmit_impl(b, M, Ns, alpha, C);
+P_b = 10^-3;
+[s, a, A, pulse] = transmit_impl(b, M, Ns, alpha, C, P_b);
 
 save filter.mat pulse Ns
 save parameters.mat M A

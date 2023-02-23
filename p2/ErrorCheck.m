@@ -24,8 +24,26 @@ function [bError] = ErrorCheck(data,TypeOfErrorCheck)
 switch TypeOfErrorCheck
     case 'parity'
         bError = mod(sum(data), 2); %Implement error check here   
-    case 'checksum'
+    case 'checksum16'
+        % Implement 16-bit checksum error check here
+
+        % Reshape the input data into 16-bit segments
+        data = reshape(data, 16, []);
+        % Sum each column
+        checksum = sum(data, 1);
         
+        % Take the bitwise AND of the sum with the number 65535(16-bit
+        % FFFF).
+        checksum = bitand(checksum, 65535);
+    
+        % Sum the resulting 16-bit values together.
+        checksum = sum(checksum, 'native');
+        
+        % Take the 1's complement of the sum by flipping all the bits.
+        checksum = bitcmp(checksum, 'uint16');
+        
+        % Check if the result is zero, indicating no errors.
+        bError = (checksum ~= 0);
     otherwise
         error('Invalid error check!')       
 end

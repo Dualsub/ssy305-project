@@ -27,19 +27,25 @@ switch TypeOfErrorCheck
         paritybit = mod(sum(packet) + sum(header), 2);
         %2 assemble the frame
         frame = [header packet paritybit];
-    case 'checksum'
-        n = 16;
-        csum = 0;
-        ds = reshape(packet, [n, length(packet) / n]);
-        display(ds);
-        for d=ds
-            dstr = char(d' + '0');
-            csum = one_comp_add(csum, bin2dec(dstr), n);
-        end
-        p = xor(dec2bin(csum, 16), 2^n);
-        display(dec2bin(csum, 16));
-        frame = [header packet p];
-        display(p);
+    case 'checksum16'
+        % Calculate 16-bit checksum
+        
+        % Reshape the input data into 16-bit segments 
+        packet = reshape(packet, 16, []);
+        % Sum each column
+        checksum = sum(packet, 1);
+        
+        % Take the bitwise AND of the sum with the number 65535(16-bit FFFFF)
+        checksum = bitand(checksum, 65535);
+     
+        % Sum the resulting 16-bit values together.
+        checksum = sum(checksum, 'native');
+     
+        % Take the 1's complement of the sum by flipping all the bits.
+        checksum = bitcmp(checksum, 'uint16');
+        
+        % Assemble the frame with the checksum appended
+        frame = [header packet typecast(checksum, 'uint8')];
     otherwise
           error('Invalid error check!')        
 end
