@@ -28,7 +28,18 @@ switch TypeOfErrorCheck
         %2 assemble the frame
         frame = [header packet paritybit];
     case 'checksum'
-
+        n = 16;
+        csum = 0;
+        ds = reshape(packet, [n, length(packet) / n]);
+        display(ds);
+        for d=ds
+            dstr = char(d' + '0');
+            csum = one_comp_add(csum, bin2dec(dstr), n);
+        end
+        p = xor(dec2bin(csum, 16), 2^n);
+        display(dec2bin(csum, 16));
+        frame = [header packet p];
+        display(p);
     otherwise
           error('Invalid error check!')        
 end

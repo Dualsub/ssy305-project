@@ -64,19 +64,29 @@ while ipacket<=nPackets
     Y = ReadFromChannel(Channel, ExpectedLengtOfFrame);
     
     if ~isnan(Y) %if data received
-        disp(['Received packet: ' num2str(ipacket)])
+        disp(['Received packet(' num2str(ipacket) '): ' num2str(Y')])
         %2-3 if data correctly received send ack and store data (if not received earlier)       
         %implement rest of receiver side of stop-and-wait ARQ protocol below (incl. error check etc.)
         %send ack by using: WriteToChannel(Channel,ackframe) where ackframe is your ackknowledgement frame
         %Complete the function [bError] = ErrorCheck(data,TypeOfErrorCheck) for error check of received data  
         
+        if ErrorCheck(Y, TypeOfErrorCheck)
+            fprintf("Bit error: %d\n", ipacket);
+        end
+
+        if R_next ~= Y(1)
+            fprintf("Sequence error (R_next=%d, S_last=%d): %d\n", R_next, Y(1), ipacket);
+        end
+
         if ~ErrorCheck(Y, TypeOfErrorCheck) && Y(1) == R_next
             R_next = mod(R_next + 1, 2);
+            infopackets(ipacket, :) = Y(2:nBitsPacket+1);
             ipacket = ipacket + 1;
         end
 
-        ackFrame = [R_next R_next];
-        WriteToChannel(Channel, ackFrame);
+        ackframe = [R_next R_next];
+        WriteToChannel(Channel, ackframe);
+        disp(['Sent ack: ' num2str(ackframe)]);
     end   
 end
 

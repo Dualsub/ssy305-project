@@ -64,8 +64,8 @@ S_last = 0;          %initialize sequence number for transmitter
 %------------- BEGIN EDITING HERE --------------
 % error('You must complete the Transmitter function!!!!!') % comment this line to implement the transmitter
 
-RTTsaveFlag=0;               % set it to '1' if you want to save recorded RTT.
-timeout = 7;
+RTTsaveFlag=1;               % set it to '1' if you want to save recorded RTT.
+timeout = 1;
 TypeOfErrorCheck = 'parity'; % select error detection method
 
 while ipacket<=size(packages,1)
@@ -80,7 +80,7 @@ while ipacket<=size(packages,1)
     
     %3 Send current frame
     WriteToChannel(Channel, frame)
-    disp(['Transmit packet: ' num2str(ipacket)])
+    disp(['Transmitted packet(' num2str(ipacket) '): ' num2str(frame)])
     
     %4-6 stop and wait for ack: implement the rest of the transmitter side
     % stop-and-wait ARQ protocol here 
@@ -90,14 +90,20 @@ while ipacket<=size(packages,1)
     timer = tic;
     time = 0;
     while time < timeout
-        ackData = ReadFromChannel(Channel, FrameLength);
+        ackData = ReadFromChannel(Channel, nBitsOverhead);
         S_expected = mod(S_last + 1, 2);
-        if ~isNaN(ackData) && ~ErrorCheck(ackData, TypeOfErrorCheck) && ackData(1) == S_expected
-            ipacket = ipacket + 1;
-            S_last = mod(S_last + 1, 2);
-            RTT(ipacket) = time;
-            break
+        if ~isnan(ackData) 
+            if ~ErrorCheck(ackData, TypeOfErrorCheck) 
+                if ackData(1) == S_expected
+                    ipacket = ipacket + 1;
+                    S_last = mod(S_last + 1, 2);
+                    RTT(ipacket) = time;
+                    fprintf("Ack: Success \n");
+                    break
+                end
+            end
         end
+           
 
         time = toc(timer);
     end
