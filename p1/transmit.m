@@ -18,7 +18,7 @@ function s = transmit(b,plot_flag)
 
 %1. Convert bits to symbols
 Ns = 5;
-alpha = 0.05;
+alpha = 0.5;
 M = 4;
 C = 2;
 P_b = 10^-3;

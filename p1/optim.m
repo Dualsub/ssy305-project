@@ -1,7 +1,7 @@
 function [] = optim()
 
-alphas = [0.8 0.01]';
-Nss = [287]';
+alphas = [0.05]';
+Nss = [51]';
 P_bs = zeros([length(alphas) length(Nss)]);
 P_e = 10^-3;
 
@@ -21,12 +21,7 @@ for M=[4]
                 P_bs(i, j) = BER;
                 fprintf("M=%f, C=%f, alpha=%f, Ns=%f, P_b=%f \n", M, C, alphas(i), Nss(j), BER * 10^3);
             end
-        end
-%         hold off;
-%         plot(Nss, P_bs(1,:));
-%         [P_bmin, I] = min(abs(P_bs(:)));
-%         [j, i] = ind2sub(size(P_bs), I);
-%         
+        end  
     end 
 end
 
